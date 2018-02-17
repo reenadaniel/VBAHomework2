@@ -1,0 +1,112 @@
+Sub StocksAnalysis()
+
+'declare varialbles
+   Dim i As Long
+   Dim cur_ticker As String
+   Dim total_volume As Double
+   Dim start_price As Double
+   Dim close_price As Double
+   Dim greatest_pct_inc As Double
+   Dim greatest_pct_dec As Double
+   Dim greatest_tot_vol As Double
+   Dim year_change As Double
+   Dim pct_change As Double
+   Dim best_ticker_vol As String
+   
+   'initialize column titles
+   Cells(1, 9).Value = "ticker"
+   Cells(1, 10).Value = "total volume"
+   Cells(1, 11).Value = "start price"
+   Cells(1, 12).Value = "close price"
+   Cells(1, 13).Value = "year change"
+   
+   Range("M:M").NumberFormat = "$#,##0.00"
+   
+   Cells(1, 14).Value = "percent change"
+   
+   Range("N:N").NumberFormat = "0%"
+   
+   Cells(1, 17).Value = "ticker"
+   Cells(1, 18).Value = "value"
+   
+   'initialize values
+   i = 2
+   j = 2
+   greatest_pct_inc = 0
+   greatest_pct_dec = 0
+   cur_greatest_tot_vol = 0
+   
+  ' loop thru all the rows in spreadsheet
+   
+  While Not IsEmpty(Cells(i, 1).Value)
+   
+        total_volume = 0
+        cur_ticker = Cells(i, 1).Value
+    'stock open price at start of year
+        start_price = Cells(i, 3).Value
+    'loop thru the current ticker to calculate total volume
+        While Cells(i, 1).Value = cur_ticker
+    'total volume for each stock and ticker
+            total_volume = total_volume + Cells(i, 7)
+            i = i + 1
+    'greatest total volume and ticker
+            If greatest_tot_vol < total_volume Then
+               greatest_tot_vol = total_volume
+               best_ticker_vol = cur_ticker
+            End If
+        Wend
+    
+    'stock close price at end of year
+         close_price = Cells(i - 1, 6).Value
+    'year change in price
+         If start_price > 0 Then
+         year_change = close_price - start_price
+    'percent yearly change in price
+         pct_change = ((close_price - start_price) / start_price) * 100
+    'greatest percent increase in price and ticker
+         If greatest_pct_inc < pct_change Then
+           greatest_pct_inc = pct_change
+           best_ticker_pct_inc = cur_ticker
+         End If
+         End If
+    'greatest percent decrease in price and ticker
+     If greatest_pct_dec > pct_change Then
+           greatest_pct_dec = pct_change
+           best_ticker_pct_dec = cur_ticker
+         End If
+    
+    'output results to cells
+    
+     Cells(j, 9).Value = cur_ticker
+     Cells(j, 10).Value = total_volume
+     Cells(j, 11).Value = start_price
+     Cells(j, 12).Value = close_price
+     Cells(j, 13).Value = year_change
+     
+     
+    If year_change < 0 Then
+        Cells(j, 13).Interior.Color = vbRed
+    Else
+        Cells(j, 13).Interior.Color = vbGreen
+    End If
+
+     Cells(j, 14).Value = pct_change
+     
+     
+     Cells(2, 16).Value = "Greatest pct increase"
+     Cells(2, 17).Value = best_ticker_pct_inc
+     Cells(2, 18).Value = greatest_pct_inc
+     Cells(3, 16).Value = "Greatest pct decrease"
+     Cells(3, 17).Value = best_ticker_pct_dec
+     Cells(3, 18).Value = greatest_pct_dec
+     Cells(4, 16).Value = "Greatest total volume"
+     Cells(4, 17).Value = best_ticker_vol
+     Cells(4, 18).Value = greatest_tot_vol
+     
+     j = j + 1
+     
+  Wend
+     
+
+End Sub
+
